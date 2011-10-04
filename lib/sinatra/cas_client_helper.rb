@@ -103,19 +103,18 @@ module Sinatra
       if request.preferred_type == "text/html"
         redirect_to_cas_for_authentication
       else
-        if vr
-          case request.preferred_type
-          when "text/xml", "application/xml"
-            content_type :xml
-            status 401
-            vr.failure_message.to_xml(:root => 'errors')
-          when "text/json", "application/json"
-            status 401
-            { :errors => { :error => vr.failure_message }}.to_json
-          end
-        else
-          halt 401, "Unauthorised!"
-        end
+        # if vr
+          # case request.preferred_type
+          # when "text/xml", "application/xml"
+            # content_type :xml
+            # vr.failure_message.to_xml(:root => 'errors')
+          # when "text/json", "application/json"
+            # { :errors => { :error => vr.failure_message }}.to_json
+          # end
+        # else
+# 
+        # end
+        halt 401, "Unauthorised!"
       end
       
     end

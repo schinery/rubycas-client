@@ -28,7 +28,6 @@ module Sinatra
           halt 200, "CAS Single-Sign-Out request intercepted." if single_sign_out
           
           st = read_ticket
-          
           if st && last_st && 
               last_st == st.ticket && 
               last_st_service == st.service
