@@ -1,6 +1,8 @@
 = RubyCAS-Client
 
-Authors::   Matt Zukowski <matt AT roughest DOT net> and Matt Campbell <matt AT soupmatt DOT com>; inspired by code by Ola Bini <ola.bini AT ki DOT se> and Matt Walker <mwalker AT tamu DOT edu>
+Authors::   Matt Zukowski <matt AT roughest DOT net> and Matt Campbell <matt AT soupmatt DOT com>; 
+inspired by code by Ola Bini <ola.bini AT ki DOT se> and Matt Walker <mwalker AT tamu DOT edu>
+            Sinatra Add on By Dan Garland <dan AT dangarland DOT co DOT uk>
 Copyright:: Portions contributed by Matt Zukowski are copyright (c) 2009 Urbacon Ltd.
             Portions contributed by Matt Campbell, Rich Yarger and Rahul Joshi are copyright (c) 2011 Vibes Media LLC.
             Other portions are copyright of their respective authors.
@@ -41,24 +43,8 @@ API documentation (i.e. the RDocs) are available at http://rubycas-client.rubyfo
 The current version of RubyCAS-Client should work with Rails 2.3.6 and up. For compatibility with
 older Rails try using an older version of the client.
 
-You can download the latest version of RubyCAS-Client from the project's rubyforge page at 
-http://rubyforge.org/projects/rubycas-client.
-
-However, if you're using Rails, it's easier to install the CAS client as a plugin:
-
-  cd <your rails app>
-  ./script/plugin install git://github.com/gunark/rubycas-client.git
-
-Alternatively, the library is also installable as a RubyGem[http://rubygems.org]:
-
   gem install rubycas-client
   
-If your Rails application is under Subversion control, you can also install the plugin as an svn:external, ensuring that
-you always have the latest bleeding-edge version of RubyCAS-Client:
-
-  ./script/plugin install -x http://svn.github.com/gunark/rubycas-client.git
-
-
 == Usage Examples
 
 If you'd rather jump right in, have a look at the example Rails and Merb applications pre-configured for CAS
@@ -102,7 +88,40 @@ filter method that checks for this value and does whatever you need it to do.
 
   require 'casclient'
   require 'casclient/frameworks/rails/filter'
+  
+==== Using RubyCAS-Client in Sinatra / Padrino
 
+To run with Sinatra, add the following to your Gemfile:
+
+gem "rubycas-client", :git => "git://github.com/dmgarland/rubycas-client"
+bundle install
+
+Then your Sinatra app could look something like this:
+
+  require 'sinatra/base'
+  require 'sinatra/cas_client'
+  require 'sinatra/cas_client_helper'
+  
+  class AuthServer < Sinatra::Base
+    register Sinatra::CasClient
+    helpers Sinatra::CasClientHelper
+  
+    use Rack::Logger
+  
+    configure do
+      set :config, { :cas_base_url => "https://cas.example.org", :logger => $LOGGER, 
+        :service_url => "http://localhost:4567" }
+      set :client, CASClient::Client.new(settings.config)
+      set :log, settings.client.log
+    end
+    
+    protect_with_cas '/'  
+    get '/' do
+      "Only CAS Authenticated people can see me!
+    end
+  end
+  
+Please note this is a work in progress!
 
 ==== A more complicated example
 
