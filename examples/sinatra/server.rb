@@ -19,9 +19,9 @@ class Server < Sinatra::Base
     'Hello world!'
   end
   
-  post '/' do
-    
-  end
+#  post '/' do
+#    
+#  end
   
   error 500 do
     File.open("500.html", "w+") { |f| f.write(response.body) }

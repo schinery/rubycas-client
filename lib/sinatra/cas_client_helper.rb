@@ -7,10 +7,6 @@ module Sinatra
       options.config[:use_gatewaying]
     end
     
-    def login_url
-      '/'
-    end
-    
     def login_to_service
       resp = options.client.login_to_service(credentials, return_path)
       if resp.is_failure?
@@ -74,25 +70,10 @@ module Sinatra
       options.log.debug("Request contains ticket #{ticket.inspect}.")
       
       if ticket =~ /^PT-/
-        CASClient::ProxyTicket.new(ticket, read_service_url, params[:renew])
+        CASClient::ProxyTicket.new(ticket, options.config[:service_url], params[:renew])
       else
-        CASClient::ServiceTicket.new(ticket, read_service_url, params[:renew])
+        CASClient::ServiceTicket.new(ticket, options.config[:service_url], params[:renew])
       end
-    end
-    
-    def read_service_url
-      if options.config[:service_url]
-        options.log.debug("Using explicitly set service url: #{options.config[:service_url]}")
-        return options.config[:service_url]
-      else
-        params[:service_url]
-      end
-      
-      # params = params.dup
-      # params.delete(:ticket)
-      # service_url = url_for(params)
-      # options.log.debug("Guessed service url: #{service_url.inspect}")
-      # return service_url
     end
     
     def returning_from_gateway?
@@ -120,7 +101,7 @@ module Sinatra
     end
     
     def redirect_to_cas_for_authentication
-      redirect_url = login_url
+      redirect_url = options.client.add_service_to_login_url(options.config[:service_url])
       
       if use_gatewaying?
         session[:cas_sent_to_gateway] = true
@@ -146,7 +127,7 @@ module Sinatra
       session[:previous_redirect_to_cas] = Time.now
       
       options.log.debug("Redirecting to #{redirect_url.inspect}")
-      send(:redirect_to, redirect_url)
+      redirect redirect_url
     end
     
     # End module

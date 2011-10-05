@@ -26,7 +26,7 @@ context Sinatra::CasClient do
       response = CASClient::ValidationResponse.new(raw_text)
       any_instance_of(CASClient::Client, :request_cas_response => response)
       any_instance_of(CASClient::Client, :retrieve_proxy_granting_ticket => pgt)
-      post "/", { :ticket => "someticket" } 
+      get "/", { :ticket => "someticket" } 
     }
     asserts(:status).equals(200)      
     
@@ -40,7 +40,7 @@ context Sinatra::CasClient do
       response = CASClient::ValidationResponse.new(raw_text)      
       any_instance_of(CASClient::Client, :request_cas_response => response)
       
-      post "/", { :ticket => "someticket" } 
+      get "/", { :ticket => "someticket" } 
     }
     asserts(:status).equals(401)     
     
