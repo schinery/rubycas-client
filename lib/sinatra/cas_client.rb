@@ -20,7 +20,7 @@ module Sinatra
             session[options.client.username_session_key] = options.fake_user
             session[:casfilteruser] = options.fake_user
             session[options.client.extra_attributes_session_key] = options.fake_extra_attributes if options.fake_extra_attributes
-            return true
+            next true
           end
           
           last_st = session[:cas_last_valid_ticket]
@@ -35,7 +35,7 @@ module Sinatra
             # The only situation where this is acceptable is if the user manually does a refresh and 
             # the same ticket happens to be in the URL.
             options.log.warn("Re-using previously validated ticket since the ticket id and service are the same.")
-            return true
+            next true
           elsif last_st &&
               !options.config[:authenticate_on_every_request] && 
               session[options.client.username_session_key]
@@ -48,7 +48,7 @@ module Sinatra
             # it will almost certainly break POST request, AJAX calls, etc.
             options.log.debug "Existing local CAS session detected for #{session[options.client.username_session_key].inspect}. "+
             "Previous ticket #{last_st.inspect} will be re-used."
-            return true
+            next true
           end
           
           if st
@@ -97,11 +97,11 @@ module Sinatra
                   options.log.info("PGT is present in session and PGT IOU #{st.pgt_iou} matches the saved PGT IOU.  Not retrieving new PGT.")
                 end
               end
-              return true
+              next true
             else
               options.log.warn("Ticket #{st.ticket.inspect} failed validation -- #{st.failure_code}: #{st.failure_message}")
               unauthorized!(st)
-              return false
+              next false
             end
           else # no service ticket was present in the request
             if returning_from_gateway?
@@ -113,19 +113,19 @@ module Sinatra
               if use_gatewaying?
                 options.log.info "This CAS client is configured to use gatewaying, so we will permit the user to continue without authentication."
                 session[options.client.username_session_key] = nil
-                return true
+                next true
               else
                 options.log.warn "The CAS client is NOT configured to allow gatewaying, yet this request was gatewayed. Something is not right!"
               end
             end
             
             unauthorized!
-            return false
+            next false
           end
         rescue OpenSSL::SSL::SSLError
           options.log.error("SSL Error: hostname was not match with the server certificate. You can try to disable the ssl verification with a :force_ssl_verification => false in your configurations file.")
           unauthorized!
-          return false
+          next false
         end
       end      
     end  
