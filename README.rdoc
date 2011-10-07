@@ -120,6 +120,22 @@ Then your Sinatra app could look something like this:
       "Only CAS Authenticated people can see me!
     end
   end
+
+For Padrio apps you can also do the following:
+
+protect_with_cas :index
+  
+get :index do
+  "Only CAS Authenticated people can see me!
+end
+
+This will also work with routes that have params, so for example
+  
+get :index, :with => :user do
+  "Only CAS Authenticated people can see me!
+end
+
+Would still only require protect_with_cas :index
   
 Please note this is a work in progress!
 
