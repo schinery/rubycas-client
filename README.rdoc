@@ -121,7 +121,7 @@ Then your Sinatra app could look something like this:
     end
   end
 
-For Padrio apps you can also do the following:
+For Padrino apps you can also do the following:
 
 protect_with_cas :index
   

@@ -24,7 +24,7 @@ module Sinatra
       options.client.ticket_store.cleanup_service_session_lookup(st) if st
       # send(:reset_session)
 			session.delete(:casfilteruser)
-      send(:redirect_to, client.logout_url(referer))
+      send(:redirect_to, options.client.logout_url(referer))
     end
     
     def single_sign_out
