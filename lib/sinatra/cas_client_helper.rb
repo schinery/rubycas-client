@@ -22,7 +22,8 @@ module Sinatra
       referer = service || request.referer
       st = session[:cas_last_valid_ticket]
       options.client.ticket_store.cleanup_service_session_lookup(st) if st
-      send(:reset_session)
+      # send(:reset_session)
+			session.delete(:casfilteruser)
       send(:redirect_to, client.logout_url(referer))
     end
     
