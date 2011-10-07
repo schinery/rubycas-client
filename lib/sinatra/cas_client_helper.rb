@@ -22,7 +22,8 @@ module Sinatra
       referer = service || request.referer
       st = session[:cas_last_valid_ticket]
       options.client.ticket_store.cleanup_service_session_lookup(st) if st
-      # send(:reset_session)
+			# http://code.google.com/p/rubycas-server/wiki/HowToConfigure
+			# To logout, your Rails app should delete the :casfilteruser session key and redirect to the CAS server's logout URI:
 			session.delete(:casfilteruser)
       send(:redirect, options.client.logout_url(referer))
     end
